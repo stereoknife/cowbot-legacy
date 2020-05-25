@@ -4,11 +4,36 @@
   "description": "a silly discord bot",
   "main": "index.js",
   "scripts": {
+    "prestart": "npm run build",
+    "start": "node ./dist/bot.js",
+    "build": "tsc -p tsconfig.json",
+    "precompile": "npm run build",
+    "compile": "sudo docker build . --platform linux/arm/v7 -t snaekomu/cowbot:latest",
+    "predeploy": "npm run compile",
+    "deploy": "sudo docker push snaekomu/cowbot:latest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "kam",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "eris": "^0.11.2"
+    "eris": "^0.12.0",
+    "google-translate-api-browser": "^1.1.71",
+    "redis": "^3.0.2",
+    "twitter": "^1.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.4",
+    "@types/redis": "^2.8.21",
+    "@types/twitter": "^1.7.0",
+    "@typescript-eslint/eslint-plugin": "^3.0.0",
+    "@typescript-eslint/parser": "^3.0.0",
+    "eslint": "^7.1.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "standard": "^14.3.3",
+    "typescript": "^3.8.3"
   }
 }

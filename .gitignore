@@ -1,0 +1,8 @@
+node_modules/
+queries/
+data/
+.vscode/
+trees/
+package-lock.json
+.editorconfig
+.eslintrc.js
