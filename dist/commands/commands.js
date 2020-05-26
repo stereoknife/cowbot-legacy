@@ -40,6 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var https_1 = __importDefault(require("https"));
+var axios_1 = __importDefault(require("axios"));
 var google_translate_api_browser_1 = require("google-translate-api-browser");
 /* eslint-enable no-unused-vars */
 var emojiScrapeRegex = /<ol class="search-results">[^]*?<h2>[^]*?<span class="emoji">(.)*<\/span>[^]*?<\/ol>/u;
@@ -70,6 +71,16 @@ function loadCommands(bot, db) {
                 }
             });
         }); });
+    });
+    bot.registerCommand('bless', function (msg, args) {
+        axios_1.default.get('http://labs.bible.org/api/?passage=random&type=json')
+            .then(function (res) {
+            if (res.status < 200 || res.status > 300)
+                return;
+            console.log(res);
+            var _a = res.data[0], bookname = _a.bookname, chapter = _a.chapter, verse = _a.verse, text = _a.text;
+            msg.channel.createMessage("**" + bookname + " " + chapter + ":" + verse + "** " + text);
+        });
     });
     bot.registerCommand('t', function (msg, args) { return __awaiter(_this, void 0, void 0, function () {
         var from, to, tr;

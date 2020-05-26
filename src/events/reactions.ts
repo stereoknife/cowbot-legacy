@@ -2,7 +2,10 @@
 import type { CommandClient, PossiblyUncachedMessage } from 'eris'
 import type { RedisClient } from 'redis'
 import { translate } from 'google-translate-api-browser'
+import langs from 'google-translate-api-browser/dist/languages'
 /* eslint-enable no-unused-vars */
+
+const l = Object.keys(langs)
 
 export function loadReactions (bot: CommandClient, db: RedisClient) {
   bot.on('messageReactionAdd', async (msg, emoji, uid) => {
@@ -13,6 +16,10 @@ export function loadReactions (bot: CommandClient, db: RedisClient) {
 
       case '🔣':
         translateMessage(msg, uid)
+        break
+
+      case '🗺️':
+        translateMessage(msg, uid, 'auto', l[Math.floor(Math.random() * l.length)])
         break
 
       default:
@@ -30,7 +37,7 @@ export function loadReactions (bot: CommandClient, db: RedisClient) {
     db.zrem(`highlights:${msg.channel}`, msg.id)
   })
 
-  function translateMessage (msg: PossiblyUncachedMessage, uid: string) {
+  function translateMessage (msg: PossiblyUncachedMessage, uid: string, from: string = 'auto', to: string = 'en') {
     db.exists(`translate:${msg.id}`, async (err, res) => {
       if (err != null) console.error(err)
       if (res === 1) {
@@ -39,18 +46,22 @@ export function loadReactions (bot: CommandClient, db: RedisClient) {
       }
 
       const m = await msg.channel.getMessage(msg.id)
-      const tr = await translate(m.content, { from: 'auto', to: 'en' }) as { text: string }
+      const tr = await translate(m.content, { from, to }) as { text: string }
+      db.setex(`translate:${msg.id}`, 60 * 30, 'd')
+      if (tr.text === m.content) return
       msg.channel.createMessage({
         embed: {
           author: {
             name: m.author.username,
             icon_url: m.author.staticAvatarURL
           },
-          title: m.content,
-          description: tr.text
+          description: m.content,
+          title: tr.text,
+          footer: {
+            text: `Translated to ${langs[to]}.`
+          }
         }
       })
-      db.setex(`translate:${msg.id}`, 60 * 30, 'd')
     })
   }
 }

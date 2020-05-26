@@ -20,7 +20,7 @@ export function loadUtilities (bot:CommandClient) {
       .catch(console.error)
   }, {
     requirements: {
-      userIDs: ['104937990006026240']
+      userIDs: [process.env.owner || '__missingid__']
     }
   })
 
@@ -29,7 +29,7 @@ export function loadUtilities (bot:CommandClient) {
     process.exit()
   }, {
     requirements: {
-      userIDs: ['104937990006026240']
+      userIDs: [process.env.owner || '__missingid__']
     }
   })
 }

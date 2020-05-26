@@ -35,9 +35,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var google_translate_api_browser_1 = require("google-translate-api-browser");
+var languages_1 = __importDefault(require("google-translate-api-browser/dist/languages"));
 /* eslint-enable no-unused-vars */
+var l = Object.keys(languages_1.default);
 function loadReactions(bot, db) {
     var _this = this;
     bot.on('messageReactionAdd', function (msg, emoji, uid) { return __awaiter(_this, void 0, void 0, function () {
@@ -48,6 +53,9 @@ function loadReactions(bot, db) {
                     break;
                 case '🔣':
                     translateMessage(msg, uid);
+                    break;
+                case '🗺️':
+                    translateMessage(msg, uid, 'auto', l[Math.floor(Math.random() * l.length)]);
                     break;
                 default:
                     break;
@@ -71,8 +79,10 @@ function loadReactions(bot, db) {
             return [2 /*return*/];
         });
     }); });
-    function translateMessage(msg, uid) {
+    function translateMessage(msg, uid, from, to) {
         var _this = this;
+        if (from === void 0) { from = 'auto'; }
+        if (to === void 0) { to = 'en'; }
         db.exists("translate:" + msg.id, function (err, res) { return __awaiter(_this, void 0, void 0, function () {
             var m, tr;
             return __generator(this, function (_a) {
@@ -87,22 +97,25 @@ function loadReactions(bot, db) {
                         return [4 /*yield*/, msg.channel.getMessage(msg.id)];
                     case 1:
                         m = _a.sent();
-                        if (m.author.id === uid)
-                            return [2 /*return*/];
-                        return [4 /*yield*/, google_translate_api_browser_1.translate(m.content, { from: 'auto', to: 'en' })];
+                        return [4 /*yield*/, google_translate_api_browser_1.translate(m.content, { from: from, to: to })];
                     case 2:
                         tr = _a.sent();
+                        db.setex("translate:" + msg.id, 60 * 30, 'd');
+                        if (tr.text === m.content)
+                            return [2 /*return*/];
                         msg.channel.createMessage({
                             embed: {
                                 author: {
                                     name: m.author.username,
                                     icon_url: m.author.staticAvatarURL
                                 },
-                                title: m.content,
-                                description: tr.text
+                                description: m.content,
+                                title: tr.text,
+                                footer: {
+                                    text: "Translated to " + languages_1.default[to] + "."
+                                }
                             }
                         });
-                        db.setex("translate:" + msg.id, 60 * 30, 'd');
                         return [2 /*return*/];
                 }
             });

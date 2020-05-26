@@ -2,6 +2,7 @@
 import type { RedisClient } from 'redis'
 import type { CommandClient } from 'eris'
 import https from 'https'
+import axios from 'axios'
 import { translate } from 'google-translate-api-browser'
 /* eslint-enable no-unused-vars */
 
@@ -27,6 +28,16 @@ export function loadCommands (bot: CommandClient, db: RedisClient) {
       const found = await msg.channel.getMessage(res[0])
       msg.channel.createMessage(found.content)
     })
+  })
+
+  bot.registerCommand('bless', (msg, args) => {
+    axios.get('http://labs.bible.org/api/?passage=random&type=json')
+      .then((res) => {
+        if (res.status < 200 || res.status > 300) return
+        console.log(res)
+        const { bookname, chapter, verse, text } = res.data[0]
+        msg.channel.createMessage(`**${bookname} ${chapter}:${verse}** ${text}`)
+      })
   })
 
   bot.registerCommand('t', async (msg, args) => {

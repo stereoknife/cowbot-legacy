@@ -3,6 +3,8 @@ queries/
 data/
 .vscode/
 trees/
+dist/
 package-lock.json
 .editorconfig
 .eslintrc.js
+.env
