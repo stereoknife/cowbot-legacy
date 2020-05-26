@@ -15,7 +15,7 @@ if (process.env.owner == null) {
 }
 
 const commandOpts = {
-  prefix: ['🤠', 'go-go-gadget-', '☭']
+  prefix: ['🤠', 'go-go-gadget', '☭']
 }
 
 const db = redis.createClient(process.env.redisPath || '/var/redis/run/redis.sock', {

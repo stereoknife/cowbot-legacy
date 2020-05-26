@@ -92,6 +92,8 @@ export function loadCommands (bot: CommandClient, db: RedisClient) {
 }
 
 // TODO colours
+// TODO doot
+// TODO skell
 
 function emojify (word: string): Promise<string> {
   return new Promise((resolve, reject) => {
