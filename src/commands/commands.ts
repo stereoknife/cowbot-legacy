@@ -10,15 +10,25 @@ const emojiScrapeRegex = /<ol class="search-results">[^]*?<h2>[^]*?<span class="
 
 export function loadCommands (bot: CommandClient, db: RedisClient) {
   // Simple commands
-  bot.registerCommand('echo', (_, args) => args.join(' '))
+  bot.registerCommand('echo', (_, args) => args.join(' '), {
+    aliases: ['e', '💬']
+  })
 
-  bot.registerCommand('clapback', (_, args) => args.join('👏') + '👏')
+  bot.registerCommand('clapback', (_, args) => args.join('👏') + '👏', {
+    aliases: ['clap', 'c', '👏']
+  })
 
-  bot.registerCommand('linegoesdown', 'https://twitter.com/moarajuliana/status/1252318965864464387')
+  bot.registerCommand('linegoesdown', 'https://twitter.com/moarajuliana/status/1252318965864464387', {
+    aliases: ['📉']
+  })
 
-  bot.registerCommand('dollarmachinegoesbrr', 'https://twitter.com/NorthernForger/status/1252412693274755074')
+  bot.registerCommand('dollarmachinegoesbrr', 'https://twitter.com/NorthernForger/status/1252412693274755074', {
+    aliases: ['🤑']
+  })
 
-  bot.registerCommand('unemployme', 'https://www.youtube.com/watch?v=M5FGuBatbTg')
+  bot.registerCommand('linegoesup', 'https://www.youtube.com/watch?v=M5FGuBatbTg', {
+    aliases: ['📈']
+  })
 
   // Complex commands
   bot.registerCommand('yee', (msg) => {
@@ -28,6 +38,8 @@ export function loadCommands (bot: CommandClient, db: RedisClient) {
       const found = await msg.channel.getMessage(res[0])
       msg.channel.createMessage(found.content)
     })
+  }, {
+    aliases: ['y', '🤠']
   })
 
   bot.registerCommand('bless', (msg, args) => {
@@ -38,17 +50,22 @@ export function loadCommands (bot: CommandClient, db: RedisClient) {
         const { bookname, chapter, verse, text } = res.data[0]
         msg.channel.createMessage(`**${bookname} ${chapter}:${verse}** ${text}`)
       })
+  }, {
+    aliases: ['b', '🙏']
   })
 
-  bot.registerCommand('t', async (msg, args) => {
+  bot.registerCommand('translate', async (msg, args) => {
     const from = 'auto'
     const to = 'en'
     const tr = await translate(args.join(' '), { from, to }) as { text: string }
     msg.channel.createMessage(tr.text)
+  }, {
+    aliases: ['t', '🔣']
   })
 
   const yturl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&key=AIzaSyAMTINdBOQCIE0ArDVVED2Ia5f0zwpIi1w&q='
-  bot.registerCommand('yt', (msg, args) => {
+
+  bot.registerCommand('youtube', (msg, args) => {
     https.get(yturl + encodeURIComponent(args.join(' ')), res => {
       const { statusCode } = res
       if (!statusCode || statusCode < 200 || statusCode >= 300) return
@@ -69,6 +86,8 @@ export function loadCommands (bot: CommandClient, db: RedisClient) {
         }
       })
     })
+  }, {
+    aliases: ['yt', '📺']
   })
 }
 
