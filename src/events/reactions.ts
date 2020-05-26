@@ -46,7 +46,7 @@ export function loadReactions (bot: CommandClient, db: RedisClient) {
       }
 
       const m = await msg.channel.getMessage(msg.id)
-      const tr = await translate(m.content, { from, to }) as { text: string }
+      const tr = await translate(m.content, { from, to }) as { text: string, from: { language: { iso: string } } }
       db.setex(`translate:${msg.id}`, 60 * 30, 'd')
       if (tr.text === m.content) return
       msg.channel.createMessage({
@@ -58,7 +58,7 @@ export function loadReactions (bot: CommandClient, db: RedisClient) {
           description: m.content,
           title: tr.text,
           footer: {
-            text: `Translated to ${langs[to]}.`
+            text: `Translated from ${tr.from.language.iso} to ${langs[to]}.`
           }
         }
       })
