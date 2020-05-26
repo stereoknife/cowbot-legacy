@@ -1,10 +1,19 @@
-node_modules/
-queries/
-data/
+# Config
 .vscode/
-trees/
-dist/
-package-lock.json
 .editorconfig
 .eslintrc.js
 .env
+
+# Node
+node_modules/
+package-lock.json
+dist/
+
+# macOS
+.DS_Store
+
+# App
+queries/
+trees/
+
+
