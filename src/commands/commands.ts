@@ -4,6 +4,7 @@ import type { CommandClient } from 'eris'
 import https from 'https'
 import axios from 'axios'
 import { translate } from 'google-translate-api-browser'
+import langs from 'google-translate-api-browser/dist/languages'
 /* eslint-enable no-unused-vars */
 
 const emojiScrapeRegex = /<ol class="search-results">[^]*?<h2>[^]*?<span class="emoji">(.)*<\/span>[^]*?<\/ol>/u
@@ -57,8 +58,20 @@ export function loadCommands (bot: CommandClient, db: RedisClient) {
   bot.registerCommand('translate', async (msg, args) => {
     const from = 'auto'
     const to = 'en'
-    const tr = await translate(args.join(' '), { from, to }) as { text: string }
-    msg.channel.createMessage(tr.text)
+    const tr = await translate(args.join(' '), { from, to }) as { text: string, from: { language: { iso: string } } }
+    msg.channel.createMessage({
+      embed: {
+        author: {
+          name: msg.author.username,
+          icon_url: msg.author.staticAvatarURL
+        },
+        description: msg.content,
+        title: tr.text,
+        footer: {
+          text: `Translated from ${langs[tr.from.language.iso]} to ${langs[to]}.`
+        }
+      }
+    })
   }, {
     aliases: ['t', '🔣']
   })

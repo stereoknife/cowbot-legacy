@@ -58,7 +58,7 @@ export function loadReactions (bot: CommandClient, db: RedisClient) {
           description: m.content,
           title: tr.text,
           footer: {
-            text: `Translated from ${tr.from.language.iso} to ${langs[to]}.`
+            text: `Translated from ${langs[tr.from.language.iso]} to ${langs[to]}.`
           }
         }
       })
