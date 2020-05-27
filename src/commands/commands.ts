@@ -47,7 +47,6 @@ export function loadCommands (bot: CommandClient, db: RedisClient) {
     axios.get('http://labs.bible.org/api/?passage=random&type=json')
       .then((res) => {
         if (res.status < 200 || res.status > 300) return
-        console.log(res)
         const { bookname, chapter, verse, text } = res.data[0]
         msg.channel.createMessage(`**${bookname} ${chapter}:${verse}** ${text}`)
       })
