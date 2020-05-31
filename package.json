@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prestart": "npm run build",
-    "start": "node ./dist/bot.js",
+    "start": "node -r dotenv/config ./dist/bot.js",
     "build": "tsc -p tsconfig.json",
     "precompile": "npm run build",
     "compile": "sudo docker build . --platform linux/arm/v7 -t snaekomu/cowbot:latest",
@@ -29,6 +29,7 @@
     "@types/twitter": "^1.7.0",
     "@typescript-eslint/eslint-plugin": "^3.0.0",
     "@typescript-eslint/parser": "^3.0.0",
+    "dotenv": "^8.2.0",
     "eslint": "^7.1.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",
