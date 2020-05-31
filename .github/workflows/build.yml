@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Docker Image
+name: build-docker
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -33,8 +33,8 @@ jobs:
         npm install typescript
         npm run build
         
-    - name: name
+    - name: Build & push docker image
       run: |
-        docker builx build --platform linux/arm/v7 --tag snaekomu/cowbot:latest
+        docker buildx build --platform linux/arm/v7 --tag snaekomu/cowbot:latest
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker push snaekomu/cowbot:latest
