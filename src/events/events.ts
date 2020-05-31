@@ -1,11 +1,13 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 import type { CommandClient } from 'eris'
+import type { RedisClient } from 'redis'
+/* eslint-enable no-unused-vars */
 
-export function loadEvents (bot: CommandClient) {
+export function loadEvents (bot: CommandClient, db: RedisClient) {
   bot.on('messageCreate', message => {
-    const match = message.content.match(/^CBT stands for [\w ]*/)
+    const match = /CBT/i.test(message.content)
     if (match) {
-      // tweet match
+      db.sadd(message.content)
     }
   })
 }

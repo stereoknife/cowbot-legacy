@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import type { RedisClient } from 'redis'
-import type { CommandClient } from 'eris'
+import type { CommandClient, Message } from 'eris'
 import https from 'https'
 import axios from 'axios'
 import { translate } from 'google-translate-api-browser'
@@ -53,6 +53,43 @@ export function loadCommands (bot: CommandClient, db: RedisClient) {
   }, {
     aliases: ['b', '🙏']
   })
+
+  bot.registerCommand('cbt', (msg) => {
+    db.srandmember('cbt', (err, res) => {
+      if (err) return console.error(err)
+      if (res) msg.channel.createMessage(res)
+    })
+  }).registerSubcommand('load', (msg, args) => {
+    const total = parseInt(args[0]) || 1000
+    ;(function fetch (rest: number, id: string): void {
+      msg.channel.getMessages(rest > 100 ? 100 : rest, id)
+        .then(batch => {
+          batch.forEach(m => {
+            if (/CBT/i.test(m.content)) db.sadd(m.content)
+          })
+          rest -= batch.length
+          if (rest > 0) {
+            id = batch[batch.length - 1].id
+            fetch(rest, id)
+          } else msg.channel.createMessage('done')
+        })
+        .catch(console.error)
+    })(total, msg.id)
+  })
+
+  bot.registerCommand('turnip', (msg, args) => {
+  }, {
+    aliases: ['nap', 'turnips', 'naps', 'n', '💸']
+  })
+    .registerSubcommand('price', (msg, args) => {
+      return '0'
+    })
+    .registerSubcommand('buy', (msg, args) => {
+      console.log('hi')
+    })
+    .registerSubcommand('buy', (msg, args) => {
+      console.log('hi')
+    })
 
   bot.registerCommand('translate', async (msg, args) => {
     const from = 'auto'
