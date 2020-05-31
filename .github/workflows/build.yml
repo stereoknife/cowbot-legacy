@@ -35,6 +35,6 @@ jobs:
         
     - name: Build & push docker image
       run: |
-        docker buildx build --platform linux/arm/v7 --tag snaekomu/cowbot:latest
+        docker buildx build --platform linux/arm/v7 --tag snaekomu/cowbot:latest .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker push snaekomu/cowbot:latest
