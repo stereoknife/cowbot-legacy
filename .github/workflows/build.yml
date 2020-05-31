@@ -24,11 +24,19 @@ jobs:
       
     - name: Setup Node.js environment
       uses: actions/setup-node@v1.4.2
-      with:
+      with: 
         node-version: 12.x
         
-    - name: Build
+    - name: Build typescript
       run: |
         npm install
         npm install typescript
         npm run build
+        
+    - name: Build docker image
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: snaekomu/cowbot
+        tags: latest
