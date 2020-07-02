@@ -12,26 +12,26 @@ const emojiScrapeRegex = /<ol class="search-results">[^]*?<h2>[^]*?<span class="
 export function loadCommands (bot: ComClient, db: RedisClient) {
 
   // Simple commands
-  bot.RegisterCommand(['clapback','clap', 'c', '👏'], ({ args }) => args.join('👏') + '👏')
+  bot.registerCommand(['clapback','clap', 'c', '👏'], ({ args }) => args.join('👏') + '👏')
 
-  bot.RegisterCommand(['linegoesdown', '📉'], (_, reply) => reply('https://twitter.com/moarajuliana/status/1252318965864464387'))
+  bot.registerCommand(['linegoesdown', '📉'], (_, reply) => reply('https://twitter.com/moarajuliana/status/1252318965864464387'))
 
-  bot.RegisterCommand(['dollarmachinegoesbrr', '🤑'], (_, reply) => reply('https://www.youtube.com/watch?v=RUw6WKIrqmw'))
+  bot.registerCommand(['dollarmachinegoesbrr', '🤑'], (_, reply) => reply('https://www.youtube.com/watch?v=RUw6WKIrqmw'))
 
-  bot.RegisterCommand(['linegoesup', '📈'], (_, reply) => reply('https://www.youtube.com/watch?v=M5FGuBatbTg'))
+  bot.registerCommand(['linegoesup', '📈'], (_, reply) => reply('https://www.youtube.com/watch?v=M5FGuBatbTg'))
 
   // Complex commands
-  bot.RegisterCommand(['remember'], ({ message, args }) => {
+  bot.registerCommand(['remember'], ({ message, args }) => {
     if (args.length < 2) return
     const name = args.shift()
     if (name == null) return
-    bot.RegisterCommand(name, (_, reply) => {
+    bot.registerCommand(name, (_, reply) => {
       reply(args.join(' '))
     }, { meta: { createdBy: message.author.id } })
     return 'Saved!'
   })
 
-  bot.RegisterCommand(['forget'], ({ message, args }) => {
+  bot.registerCommand(['forget'], ({ message, args }) => {
     const command = bot.commands[args[0]]
     if (command == null) return
     if (command.meta.createdBy !== message.author.id) return "can't delete someone else's command >:("
@@ -39,7 +39,7 @@ export function loadCommands (bot: ComClient, db: RedisClient) {
     return 'Forgotten!'
   })
 
-  bot.RegisterCommand(['yee', '🤠'], ({ message }) => {
+  bot.registerCommand(['yee', '🤠'], ({ message }) => {
     db.zrevrange(`highlights:${message.channel}`, 0, 1, async (err, res) => {
       if (err) console.error(err)
       if (res == null) return 'no messages saved in this channel'
@@ -48,7 +48,7 @@ export function loadCommands (bot: ComClient, db: RedisClient) {
     })
   })
 
-  bot.RegisterCommand(['bless', 'b', '🙏'], ({ message }) => {
+  bot.registerCommand(['bless', 'b', '🙏'], ({ message }) => {
     axios.get('http://labs.bible.org/api/?passage=random&type=json')
       .then((res) => {
         if (res.status < 200 || res.status > 300) return
@@ -111,9 +111,9 @@ export function loadCommands (bot: ComClient, db: RedisClient) {
   //   hidden: true
   // })
 
-  bot.RegisterCommand(['translate', 't', '🔣'], ({ message, args }, reply) => {
-    const from = 'auto'
-    const to = 'en'
+  bot.registerCommand(['translate', 't', '🔣'], ({ message, args, flags }, reply) => {
+    const from = typeof flags.from === 'string' ? flags.from : 'auto'
+    const to = typeof flags.to === 'string' ? flags.to : 'en'
     type payload = { text: string, from: { language: { iso: string } } }
     translate(args.join(' '), { from, to })
       .then((tr: {} | { text: string, from: { language: { iso: string } } }) => {
@@ -132,10 +132,12 @@ export function loadCommands (bot: ComClient, db: RedisClient) {
         })
       })
   })
+    .registerFlag('from', 'f', 'string')
+    .registerFlag('to', 't', 'string')
 
   const yturl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&key=AIzaSyAMTINdBOQCIE0ArDVVED2Ia5f0zwpIi1w&q='
 
-  bot.RegisterCommand(['youtube', 'yt', '📺'], ({ message, args }, reply) => {
+  bot.registerCommand(['youtube', 'yt', '📺'], ({ message, args }, reply) => {
     https.get(yturl + encodeURIComponent(args.join(' ')), res => {
       const { statusCode } = res
       if (!statusCode || statusCode < 200 || statusCode >= 300) return

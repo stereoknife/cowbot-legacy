@@ -1,4 +1,5 @@
 import { Message, ClientOptions, Client, MessageContent } from "eris"
+import { allowedNodeEnvironmentFlags } from "process"
 
 // Command
 export type CommandOpts = {
@@ -10,7 +11,8 @@ export type Command = {
   flags: { [key: string]: Flag },
   checkPermission: CommandPermissionFn
   exec: CommandExecFn,
-  meta: { [key: string]: any}
+  meta: { [key: string]: any},
+  registerFlag: (name: string, short?: string, type?: 'bool' | 'number' | 'string') => Command
 }
 
 export type CommandExecFn = (
@@ -28,7 +30,7 @@ export type CommandPermissionFn = (author: string, channel: string) => boolean
 export type Flag = {
   name: string,
   long: string,
-  short: string,
+  short?: string,
   type: 'bool' | 'number' | 'string'
 }
 
@@ -53,13 +55,24 @@ export class ComClient extends Client {
     this.on('messageCreate', this.HandleMessages)
   }
 
-  RegisterCommand (identifier: string | string[], exec: CommandExecFn, opts: CommandOpts = {}): Command {
+  registerCommand (identifier: string | string[], exec: CommandExecFn, opts: CommandOpts = {}): Command {
     if (!Array.isArray(identifier)) identifier = [identifier]
-    const com = {
+    const com: Command = {
       flags: {},
       checkPermission: opts.checkPermission ?? (() => true),
       exec,
-      meta: opts.meta ?? {}
+      meta: opts.meta ?? {},
+      registerFlag: (name: string, short?: string, type?: 'bool' | 'number' | 'string') => {
+        const flag = {
+          name: name,
+          long: '--' + name,
+          short: short ? '-' + short : undefined,
+          type: type ? type : 'bool',
+        }
+        com.flags[flag.long] = flag
+        if (flag.short != null) com.flags[flag.short] = flag
+        return com
+      }
     }
     identifier.forEach(id => {
       this.commands[id] = com
@@ -92,8 +105,8 @@ export class ComClient extends Client {
       for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
         const flagMap = {
-          string: () => tokens[i++],
-          number: () => Number.parseFloat(tokens[i++]),
+          string: () => tokens[++i],
+          number: () => Number.parseFloat(tokens[++i]),
           bool: () => true
         }
   
@@ -103,21 +116,19 @@ export class ComClient extends Client {
           if (flag != null) {
             flags[flag.name] = flagMap[flag.type]()
             continue
-          }
+          } else args.push(token)
         } else if (token.startsWith('-')) {
           // Iterate through characters, ignore first (-)
           // Check flag exists and add it to list
           const chars = token.split('')
           for (let j = 1; j < chars.length; j++) {
-            const flag = command?.flags[chars[j]] ?? undefined
+            const flag = command?.flags['-' + chars[j]] ?? undefined
             if (flag != null) {
               if (flag.type !== 'bool' && chars.length > 2) throw new Error ('Tried to use flag with argument in combined shortcut form')
               flags[flag.name] = flagMap[flag.type]()
-              continue
-            }
+            } else args.push('-' + chars[j])
           }
-        }
-        args.push(token)
+        } else args.push(token)
       }
   
       // Do the thing
