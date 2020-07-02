@@ -1,6 +1,7 @@
 import Eris from 'eris'
 import redis from 'redis'
 
+import { ComClient } from './parser'
 import { loadReactions } from './events/reactions'
 import { loadCommands } from './commands/commands'
 import { loadUtilities } from './commands/utils'
@@ -14,17 +15,15 @@ if (process.env.owner == null) {
   console.warn("No owner defined, you won't be able to access to restricted commands.")
 }
 
-const commandOpts = {
-  prefix: ['🤠', 'go-go-gadget', '☭']
-}
-
 const db = redis.createClient(process.env.redisPath || '/var/redis/run/redis.sock', {
   retry_strategy: opt => { if (opt.attempt > 10) process.exit() },
   socket_initial_delay: 5000
 })
 db.on('error', err => console.error(err))
 
-const bot = new Eris.CommandClient(process.env.token, {}, commandOpts)
+const bot = new ComClient(process.env.token, {
+  prefix: ['🤠', 'go-go-gadget', '☭']
+})
 
 process.on('uncaughtException', function (err) {
   console.log(err)
@@ -44,11 +43,11 @@ bot.on('ready', () => {
 })
 
 // Reactions
-loadReactions(bot, db)
+//loadReactions(bot, db)
 // loadEvents(bot)
 
 // Commands
 loadCommands(bot, db)
-loadUtilities(bot)
+//loadUtilities(bot)
 
 bot.connect()
