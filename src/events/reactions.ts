@@ -1,13 +1,14 @@
 /* eslint-disable no-unused-vars */
-import type { CommandClient, PossiblyUncachedMessage } from 'eris'
+import type { PossiblyUncachedMessage } from 'eris'
 import type { RedisClient } from 'redis'
 import { translate } from 'google-translate-api-browser'
 import langs from 'google-translate-api-browser/dist/languages'
+import { ComClient } from '../parser'
 /* eslint-enable no-unused-vars */
 
 const l = Object.keys(langs)
 
-export function loadReactions (bot: CommandClient, db: RedisClient) {
+export function loadReactions (bot: ComClient, db: RedisClient) {
   bot.on('messageReactionAdd', async (msg, emoji, uid) => {
     switch (emoji.name) {
       case '🤠':

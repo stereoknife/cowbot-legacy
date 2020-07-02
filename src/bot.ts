@@ -43,7 +43,7 @@ bot.on('ready', () => {
 })
 
 // Reactions
-//loadReactions(bot, db)
+loadReactions(bot, db)
 // loadEvents(bot)
 
 // Commands

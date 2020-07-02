@@ -1,27 +1,19 @@
-// Command:
-// Channel/Author scope
-// Command
-// Subcommands
-// Flags
-// Arguments
-
 import { Message, ClientOptions, Client, MessageContent } from "eris"
-import { debug } from "console"
 
-enum token_types {
-  prefix,
-  flag,
-  shortFlag,
-  argument
+// Command
+export type CommandOpts = {
+  checkPermission?: (author: string, channel: string) => boolean
+  meta?: { [key: string]: any}
 }
 
-type Command = {
+export type Command = {
   flags: { [key: string]: Flag },
-  checkPermission: (author: string, channel: string) => boolean
+  checkPermission: CommandPermissionFn
   exec: CommandExecFn,
   meta: { [key: string]: any}
 }
-type CommandExecFn = (
+
+export type CommandExecFn = (
   data: {
     message: Message,
     args: string[],
@@ -30,32 +22,34 @@ type CommandExecFn = (
   }, 
   reply: (content: MessageContent) => void) => void | string
 
-type Flag = {
+export type CommandPermissionFn = (author: string, channel: string) => boolean
+
+// Flag
+export type Flag = {
   name: string,
   long: string,
   short: string,
   type: 'bool' | 'number' | 'string'
 }
 
-type ConstructorOptions = ClientOptions & {
-  prefix: string[]
-}
-
-type CommandOpts = {
-  checkPermission?: (author: string, channel: string) => boolean
-  meta?: { [key: string]: any}
+// Client
+export type ConstructorOptions = ClientOptions & {
+  prefix: string[],
+  admins?: { [key: string]: Set<string> }
 }
 
 export class ComClient extends Client {
   commands: { [key: string]: Command }
   prefix: string[]
   prefixrx: RegExp
+  admins: { [key: string]: Set<string> }
 
   constructor (token: string, opts?: ConstructorOptions) {
     super(token, opts)
     this.prefix = opts?.prefix ?? []
     this.commands = {}
     this.prefixrx = new RegExp(`^${this.prefix.join('|')}`, 'g')
+    this.admins = opts?.admins ?? {}
     this.on('messageCreate', this.HandleMessages)
   }
 

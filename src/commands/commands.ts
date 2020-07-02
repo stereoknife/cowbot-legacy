@@ -1,19 +1,15 @@
 /* eslint-disable no-unused-vars */
 import type { RedisClient } from 'redis'
-import type { Client, Message } from 'eris'
 import https from 'https'
 import axios from 'axios'
 import { translate } from 'google-translate-api-browser'
 import langs from 'google-translate-api-browser/dist/languages'
 import { ComClient } from '../parser'
-import { debug } from 'console'
 
 /* eslint-enable no-unused-vars */
-
 const emojiScrapeRegex = /<ol class="search-results">[^]*?<h2>[^]*?<span class="emoji">(.)*<\/span>[^]*?<\/ol>/u
 
 export function loadCommands (bot: ComClient, db: RedisClient) {
-  console.log(bot)
 
   // Simple commands
   bot.RegisterCommand(['clapback','clap', 'c', '👏'], ({ args }) => args.join('👏') + '👏')
