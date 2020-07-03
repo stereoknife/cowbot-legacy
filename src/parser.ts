@@ -1,19 +1,4 @@
 import { Message, ClientOptions, Client, MessageContent } from "eris"
-import { allowedNodeEnvironmentFlags } from "process"
-
-// Command
-export type CommandOpts = {
-  checkPermission?: (author: string, channel: string) => boolean
-  meta?: { [key: string]: any}
-}
-
-export type Command = {
-  flags: { [key: string]: Flag },
-  checkPermission: CommandPermissionFn
-  exec: CommandExecFn,
-  meta: { [key: string]: any},
-  registerFlag: (name: string, short?: string, type?: 'bool' | 'number' | 'string') => Command
-}
 
 export type CommandExecFn = (
   data: {
@@ -24,7 +9,7 @@ export type CommandExecFn = (
   }, 
   reply: (content: MessageContent) => void) => void | string
 
-export type CommandPermissionFn = (author: string, channel: string) => boolean
+export type CommandPermissionFn = (author: string, guild: string) => boolean
 
 // Flag
 export type Flag = {
@@ -32,6 +17,38 @@ export type Flag = {
   long: string,
   short?: string,
   type: 'bool' | 'number' | 'string'
+}
+
+// Command
+export interface CommandOpts {
+  checkPermissionFn?: (author: string, channel: string) => boolean
+  meta?: { [key: string]: any}
+}
+
+export class Command {
+  flags: { [key: string]: Flag } = {}
+  meta: { [key: string]: any} = {}
+  exec: CommandExecFn
+  checkPermission: CommandPermissionFn = (author:string, guild: string) => true
+  registerFlag: (name: string, short?: string, type?: 'bool' | 'number' | 'string') => Command = RegisterFlag
+
+  constructor(fn: CommandExecFn, opts: CommandOpts) {
+    this.exec = fn
+    if (opts.checkPermissionFn != null) this.checkPermission = opts.checkPermissionFn
+    if (opts.meta) this.meta = opts.meta
+  }
+}
+
+function RegisterFlag (this: Command, name: string, short?: string, type?: 'bool' | 'number' | 'string'): Command {
+  const flag = {
+    name: name,
+    long: '--' + name,
+    short: short ? '-' + short : undefined,
+    type: type ? type : 'bool',
+  }
+  this.flags[flag.long] = flag
+  if (flag.short != null) this.flags[flag.short] = flag
+  return this
 }
 
 // Client
@@ -52,35 +69,20 @@ export class PosixClient extends Client {
     this.commands = {}
     this.prefixrx = new RegExp(`^${this.prefix.join('|')}`, 'g')
     this.admins = opts?.admins ?? {}
-    this.on('messageCreate', this.HandleMessages)
+    this.on('messageCreate', this.handleMessages)
   }
 
   registerCommand (identifier: string | string[], exec: CommandExecFn, opts: CommandOpts = {}): Command {
     if (!Array.isArray(identifier)) identifier = [identifier]
-    const com: Command = {
-      flags: {},
-      checkPermission: opts.checkPermission ?? (() => true),
-      exec,
-      meta: opts.meta ?? {},
-      registerFlag: (name: string, short?: string, type?: 'bool' | 'number' | 'string') => {
-        const flag = {
-          name: name,
-          long: '--' + name,
-          short: short ? '-' + short : undefined,
-          type: type ? type : 'bool',
-        }
-        com.flags[flag.long] = flag
-        if (flag.short != null) com.flags[flag.short] = flag
-        return com
-      }
-    }
+    const com = new Command(exec, opts)
     identifier.forEach(id => {
       this.commands[id] = com
     });
     return com
   }
 
-  HandleMessages (this: ComClient, message: Message) {
+
+  handleMessages (message: Message): void {
     const { author, channel } = message
     // Set author, channel context
     // Do context stuff
@@ -102,6 +104,7 @@ export class PosixClient extends Client {
       const args = []
       const flags: { [key: string]: string | number | boolean } = {}
   
+      tokenLoop:
       for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i]
         const flagMap = {
@@ -115,8 +118,8 @@ export class PosixClient extends Client {
           const flag = command?.flags[token] ?? undefined
           if (flag != null) {
             flags[flag.name] = flagMap[flag.type]()
-            continue
-          } else args.push(token)
+            continue tokenLoop
+          }
         } else if (token.startsWith('-')) {
           // Iterate through characters, ignore first (-)
           // Check flag exists and add it to list
@@ -126,9 +129,11 @@ export class PosixClient extends Client {
             if (flag != null) {
               if (flag.type !== 'bool' && chars.length > 2) throw new Error ('Tried to use flag with argument in combined shortcut form')
               flags[flag.name] = flagMap[flag.type]()
-            } else args.push('-' + chars[j])
+              continue tokenLoop
+            }
           }
-        } else args.push(token)
+        }
+        args.push(token)
       }
   
       // Do the thing
@@ -136,5 +141,4 @@ export class PosixClient extends Client {
       if (reply) channel.createMessage(reply)
     }
   }
-
 }
