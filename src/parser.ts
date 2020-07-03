@@ -40,7 +40,7 @@ export type ConstructorOptions = ClientOptions & {
   admins?: { [key: string]: Set<string> }
 }
 
-export class ComClient extends Client {
+export class PosixClient extends Client {
   commands: { [key: string]: Command }
   prefix: string[]
   prefixrx: RegExp

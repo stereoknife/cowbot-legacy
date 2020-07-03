@@ -1,7 +1,7 @@
 import Eris from 'eris'
 import redis from 'redis'
 
-import { ComClient } from './parser'
+import { PosixClient } from './parser'
 import { loadReactions } from './events/reactions'
 import { loadCommands } from './commands/commands'
 import { loadUtilities } from './commands/utils'
@@ -21,7 +21,7 @@ const db = redis.createClient(process.env.redisPath || '/var/redis/run/redis.soc
 })
 db.on('error', err => console.error(err))
 
-const bot = new ComClient(process.env.token, {
+const bot = new PosixClient(process.env.token, {
   prefix: ['🤠', 'go-go-gadget', '☭']
 })
 

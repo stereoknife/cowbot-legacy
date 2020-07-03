@@ -4,12 +4,12 @@ import https from 'https'
 import axios from 'axios'
 import { translate } from 'google-translate-api-browser'
 import langs from 'google-translate-api-browser/dist/languages'
-import { ComClient } from '../parser'
+import { PosixClient } from '../parser'
 
 /* eslint-enable no-unused-vars */
 const emojiScrapeRegex = /<ol class="search-results">[^]*?<h2>[^]*?<span class="emoji">(.)*<\/span>[^]*?<\/ol>/u
 
-export function loadCommands (bot: ComClient, db: RedisClient) {
+export function loadCommands (bot: PosixClient, db: RedisClient) {
 
   // Simple commands
   bot.registerCommand(['clapback','clap', 'c', '👏'], ({ args }) => args.join('👏') + '👏')
