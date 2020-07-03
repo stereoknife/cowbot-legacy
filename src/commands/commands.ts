@@ -21,23 +21,23 @@ export function loadCommands (bot: PosixClient, db: RedisClient) {
   bot.registerCommand(['linegoesup', '📈'], (_, reply) => reply('https://www.youtube.com/watch?v=M5FGuBatbTg'))
 
   // Complex commands
-  bot.registerCommand(['remember'], ({ message, args }) => {
-    if (args.length < 2) return
-    const name = args.shift()
-    if (name == null) return
-    bot.registerCommand(name, (_, reply) => {
-      reply(args.join(' '))
-    }, { meta: { createdBy: message.author.id } })
-    return 'Saved!'
-  })
+  // bot.registerCommand(['remember'], ({ message, args }) => {
+  //   if (args.length < 2) return
+  //   const name = args.shift()
+  //   if (name == null) return
+  //   bot.registerCommand(name, (_, reply) => {
+  //     reply(args.join(' '))
+  //   }, { meta: { createdBy: message.author.id } })
+  //   return 'Saved!'
+  // })
 
-  bot.registerCommand(['forget'], ({ message, args }) => {
-    const command = bot.commands[args[0]]
-    if (command == null) return
-    if (command.meta.createdBy !== message.author.id) return "can't delete someone else's command >:("
-    delete bot.commands[args[0]]
-    return 'Forgotten!'
-  })
+  // bot.registerCommand(['forget'], ({ message, args }) => {
+  //   const command = bot.commands[args[0]]
+  //   if (command == null) return
+  //   if (command.meta.createdBy !== message.author.id) return "can't delete someone else's command >:("
+  //   delete bot.commands[args[0]]
+  //   return 'Forgotten!'
+  // })
 
   bot.registerCommand(['yee', '🤠'], ({ message }) => {
     db.zrevrange(`highlights:${message.channel}`, 0, 1, async (err, res) => {
@@ -137,7 +137,7 @@ export function loadCommands (bot: PosixClient, db: RedisClient) {
 
   const yturl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&key=AIzaSyAMTINdBOQCIE0ArDVVED2Ia5f0zwpIi1w&q='
 
-  bot.registerCommand(['youtube', 'yt', '📺'], ({ message, args }, reply) => {
+  bot.registerCommand(['youtube', 'yt', '📺'], ({ args }, reply) => {
     https.get(yturl + encodeURIComponent(args.join(' ')), res => {
       const { statusCode } = res
       if (!statusCode || statusCode < 200 || statusCode >= 300) return
