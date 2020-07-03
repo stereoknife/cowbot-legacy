@@ -15,5 +15,4 @@ dist/
 # App
 queries/
 trees/
-
-
+src/markov.ts
