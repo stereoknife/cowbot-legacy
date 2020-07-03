@@ -62,6 +62,7 @@ export class PosixClient extends Client {
   prefix: string[]
   prefixrx: RegExp
   admins: { [key: string]: Set<string> }
+  init: { [key: string]: () => void } = {}
 
   constructor (token: string, opts?: ConstructorOptions) {
     super(token, opts)
@@ -81,6 +82,16 @@ export class PosixClient extends Client {
     return com
   }
 
+  registerInit (identifier: string, fn: () => void): void {
+    this.init[identifier] = fn
+  }
+
+  deregisterInit (identifier: string): void {
+    if (this.init[identifier] != null)
+      delete this.init[identifier]
+    else
+      console.error('Tried to remove unexsistent init: ' + identifier)
+  }
 
   handleMessages (message: Message): void {
     const { author, channel } = message
