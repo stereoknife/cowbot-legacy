@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import type { CommandClient, Message } from 'eris'
 import fs from 'fs'
+import { exec } from 'child_process'
 /* eslint-enable no-unused-vars */
 
 export function loadUtilities (bot:CommandClient) {
@@ -32,4 +33,17 @@ export function loadUtilities (bot:CommandClient) {
       userIDs: [process.env.owner || '__missingid__']
     }
   })
+
+  // bot.registerCommand('update', msg => {
+  //   if (process.env.updateScript == null) return 'No update script found'
+  //   exec(process.env.updateScript, err => {
+  //     if (err) return msg.channel.createMessage('Error running update script')
+  //   })
+  //   bot.disconnect({ reconnect: false })
+  //   process.exit()
+  // }, {
+  //   requirements: {
+  //     userIDs: [process.env.owner || '__missingid__']
+  //   }
+  // })
 }

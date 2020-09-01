@@ -1,4 +1,5 @@
 import { Message, ClientOptions, Client, MessageContent } from "eris"
+import path from 'path'
 
 export type CommandExecFn = (
   data: {
@@ -10,6 +11,8 @@ export type CommandExecFn = (
   reply: (content: MessageContent) => void) => void | string
 
 export type CommandPermissionFn = (author: string, guild: string) => boolean
+
+type a = (val: Number) => void
 
 // Flag
 export type Flag = {
