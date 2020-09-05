@@ -1,10 +1,9 @@
-import Eris from 'eris'
-import redis from 'redis'
-
-import { PosixClient } from './parser'
-import { loadReactions } from './events/reactions'
-import { loadCommands } from './commands/commands'
-import { loadUtilities } from './commands/utils'
+import Eris, { Client } from 'eris'
+import { parser } from './parser'
+import { exec } from './commanding'
+import * as commands from './commands'
+import log from './logging'
+import * as db from './db'
 
 // Check env variables
 if (process.env.token == null) {
@@ -15,15 +14,9 @@ if (process.env.owner == null) {
   console.warn("No owner defined, you won't be able to access to restricted commands.")
 }
 
-const db = redis.createClient(process.env.redisPath || '/var/redis/run/redis.sock', {
-  retry_strategy: opt => { if (opt.attempt > 10) process.exit() },
-  socket_initial_delay: 5000
-})
-db.on('error', err => console.error(err))
+db.init()
 
-const bot = new PosixClient(process.env.token, {
-  prefix: ['🤠', 'go-go-gadget', '☭']
-})
+const bot = new Client(process.env.token)
 
 process.on('uncaughtException', function (err) {
   console.log(err)
@@ -42,12 +35,31 @@ bot.on('ready', () => {
   console.log('Ready!')
 })
 
-// Reactions
-loadReactions(bot, db)
-// loadEvents(bot)
+const parse = parser({
+  prefix: ['🤠', 'go-go-gadget', '☭']
+})
 
-// Commands
-loadCommands(bot, db)
-//loadUtilities(bot)
+commands.init()
+
+bot.on('messageCreate', ({ channel, content, author }) => {
+  const commandData = parse(content)
+  // if valid command
+  if (commandData?.prefix != null && commandData?.prefix != '') {
+    log('valid command found')
+    const reply = channel.createMessage.bind(channel)
+    let dm: (content: any) => void = (content: any) => {}
+    author.getDMChannel()
+      .then(ch => {
+        log('got dm channel')
+        dm = ch.createMessage.bind(ch)
+      })
+      .catch(() => { log('error getting dm channel', 2) })
+      .finally(() => {
+        exec(commandData, reply, dm)
+       })
+  }
+
+  // if not valid command
+})
 
 bot.connect()
