@@ -11,19 +11,14 @@ export type parserOptions = {
   prefix: string[]
 }
 
-export function parser(opt: parserOptions): (input: string) => ParseData | void {
-  return (input: string) => {
-    try {
-      return makeChain({}, input)
-        .chain(extractPrefix(opt.prefix))
-        .chain(extractCommand)
-        .chain(extractFlags)
-        .chain(extractArgs)
-        .parse()
-    } catch {
-      return
-    }
-  }
+export function parser(opt: parserOptions): (input: string) => ParseData {
+  return (input: string) =>
+  makeChain({}, input)
+    .chain(extractPrefix(opt.prefix))
+    .chain(extractCommand)
+    .chain(extractFlags)
+    .chain(extractArgs)
+    .parse()
 }
 
 type NullableParseData = {
@@ -38,14 +33,14 @@ type ParserChain = {
   chain: (f: (input: string) => ParserOut) => ParserChain
 }
 
-type ParserOut = [NullableParseData, string] | null
+type ParserOut = [NullableParseData, string]
 
 function makeChain(data: NullableParseData | null, input: string): ParserChain {
   return {
     parse: () => {
-      if (data == null) throw 'null data'
-      if (data.prefix == null) throw 'null data'
-      if (data.name == null) throw 'null data'
+      if (data == null) data = {}
+      if (data.prefix == null) data.prefix = ''
+      if (data.name == null) data.prefix = ''
       if (data.flags == null) data.flags = {}
       if (data.args == null) data.args = []
       return data as ParseData
@@ -60,15 +55,13 @@ function makeChain(data: NullableParseData | null, input: string): ParserChain {
 function extractPrefix(pref: string[]): (input: string) => ParserOut {
   return (input: string) => {
     const prefix = input.match(new RegExp(`^(${pref.join('|')})`))?.[1]
-    if (prefix == null) return null
-    return [{ prefix }, input.slice(prefix.length)]
+    return [{ prefix }, input.slice(prefix?.length ?? 0)]
   }
 }
 
-function extractCommand(input: string): ParserOut | null {
+function extractCommand(input: string): ParserOut {
   const w = words(input)
   const name = w.shift()
-  if (name == null) return null
   return [{ name }, w.join(' ')]
 }
 
