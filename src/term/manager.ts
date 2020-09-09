@@ -1,5 +1,5 @@
 import { ParseData } from './parser'
-import log from './logging'
+import log from '../logging'
 
 type Command = (data: ParseData, guild: any, dm: any) => void
 
@@ -16,23 +16,14 @@ const emptyOpts = {
   denyUsers: null,
   allowUsers: null,
   denyGuilds: null,
-  allowGuilds: null,
+  allowGuilds: null
 }
 
 const aliasMap = new Map()
 const commandMap = new Map()
 
-export function exec(data: ParseData, publicReply: any, privateReply: any) {
-  log('executing ' + data.name)
-  const id = findAlias(data.name)
-  const comm = findCommand(id)
-  if (comm != null) {
-    comm(data, publicReply, privateReply)
-  }
-}
-
-export function register(names: string[], cmd: Command) {
-  if (names.length == 0) return
+export function register (names: string[], cmd: Command) {
+  if (names.length === 0) return
   const id = names.shift()
   names.forEach(alias => {
     aliasMap.set(alias, id)
@@ -40,7 +31,20 @@ export function register(names: string[], cmd: Command) {
   commandMap.set(id, cmd)
 }
 
-function loadCommand(id: string, db: any) {
+export function deregister (name: string) {
+
+}
+
+export function exec (data: ParseData, publicReply: any, privateReply: any) {
+  log('executing ' + data.name)
+  const id = findAlias(data.name) ?? data.name
+  const comm = findCommand(id)
+  if (comm != null) {
+    comm(data, publicReply, privateReply)
+  }
+}
+
+function loadCommand (id: string, db: any) {
   const op = { ...emptyOpts }
   op.alias = db[`${id}:alias`]
   op.denyUsers = db[`${id}:denyusers`]
@@ -50,7 +54,7 @@ function loadCommand(id: string, db: any) {
   return op
 }
 
-function findAlias(alias: string | undefined): string | undefined {
+function findAlias (alias: string | undefined): string | undefined {
   if (alias == null) return undefined
   for (const [key, value] of aliasMap) {
     if (key === alias) return value
@@ -58,7 +62,7 @@ function findAlias(alias: string | undefined): string | undefined {
   return undefined
 }
 
-function findCommand(id: string | undefined): Command | undefined {
+function findCommand (id: string | undefined): Command | undefined {
   if (id == null) return undefined
   return commandMap.get(id)
 }

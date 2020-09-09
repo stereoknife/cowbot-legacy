@@ -1,9 +1,9 @@
-import Eris, { Client } from 'eris'
-import { parser } from './parser'
-import { exec } from './commanding'
-import * as commands from './commands'
-import log from './logging'
+import { Client } from 'eris'
 import * as db from './db'
+import term from './term'
+import react from './reactions'
+import translate from './usr/translate.pkg'
+import general from './usr/general.pkg'
 
 // Check env variables
 if (process.env.token == null) {
@@ -20,46 +20,25 @@ const bot = new Client(process.env.token)
 
 process.on('uncaughtException', function (err) {
   console.log(err)
-  console.log('RIP me :(')
-  bot.disconnect({ reconnect: false })
-  process.exit()
+  console.log('Katastrooffi occured')
+  bot.disconnect({ reconnect: true })
 })
 
 process.on('SIGINT', function () {
-  console.log('Buh bai')
+  console.log('Shutting down...')
   bot.disconnect({ reconnect: false })
   process.exit()
 })
 
+term.setup(bot)
+react.setup(bot)
+
+// load base features
+translate.install()
+general.install()
+
 bot.on('ready', () => {
   console.log('Ready!')
-})
-
-const parse = parser({
-  prefix: ['🤠', 'go-go-gadget', '☭']
-})
-
-commands.init()
-
-bot.on('messageCreate', ({ channel, content, author }) => {
-  const commandData = parse(content)
-  // if valid command
-  if (commandData?.prefix != null && commandData?.prefix != '') {
-    log('valid command found')
-    const reply = channel.createMessage.bind(channel)
-    let dm: (content: any) => void = (content: any) => {}
-    author.getDMChannel()
-      .then(ch => {
-        log('got dm channel')
-        dm = ch.createMessage.bind(ch)
-      })
-      .catch(() => { log('error getting dm channel', 2) })
-      .finally(() => {
-        exec(commandData, reply, dm)
-       })
-  }
-
-  // if not valid command
 })
 
 bot.connect()

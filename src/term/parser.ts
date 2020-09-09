@@ -1,4 +1,5 @@
 import { words } from 'lodash/fp'
+import log from '../logging'
 
 export type ParseData = {
   prefix: string
@@ -11,14 +12,14 @@ export type parserOptions = {
   prefix: string[]
 }
 
-export function parser(opt: parserOptions): (input: string) => ParseData {
+export function parser (opt: parserOptions): (input: string) => ParseData {
   return (input: string) =>
-  makeChain({}, input)
-    .chain(extractPrefix(opt.prefix))
-    .chain(extractCommand)
-    .chain(extractFlags)
-    .chain(extractArgs)
-    .parse()
+    makeChain({}, input)
+      .chain(extractPrefix(opt.prefix))
+      .chain(extractCommand)
+      .chain(extractFlags)
+      .chain(extractArgs)
+      .parse()
 }
 
 type NullableParseData = {
@@ -35,7 +36,7 @@ type ParserChain = {
 
 type ParserOut = [NullableParseData, string]
 
-function makeChain(data: NullableParseData | null, input: string): ParserChain {
+function makeChain (data: NullableParseData | null, input: string): ParserChain {
   return {
     parse: () => {
       if (data == null) data = {}
@@ -47,40 +48,44 @@ function makeChain(data: NullableParseData | null, input: string): ParserChain {
     },
     chain: (p) => {
       const [out, rest] = p(input) ?? [null, '']
-      return makeChain(data, input)
+      return makeChain({ ...data, ...out }, rest)
     }
   }
 }
 
-function extractPrefix(pref: string[]): (input: string) => ParserOut {
+function extractPrefix (pref: string[]): (input: string) => ParserOut {
   return (input: string) => {
     const prefix = input.match(new RegExp(`^(${pref.join('|')})`))?.[1]
+    log(prefix, 0)
     return [{ prefix }, input.slice(prefix?.length ?? 0)]
   }
 }
 
-function extractCommand(input: string): ParserOut {
+function extractCommand (input: string): ParserOut {
   const w = words(input)
   const name = w.shift()
+  log(name, 0)
   return [{ name }, w.join(' ')]
 }
 
-function extractFlags(input: string): ParserOut {
+function extractFlags (input: string): ParserOut {
   const ws = words(input)
   const out: string[] = []
   const flags: { [key: string]: string } = {}
 
   for (let i = 0; i < ws.length; i++) {
-    const w = ws[i];
+    const w = ws[i]
     if (w.match(/^--/)) {
       flags[w] = ws[++i]
     } else {
       out.push(w)
     }
   }
+  log(flags, 0)
   return [{ flags }, out.join(' ')]
 }
 
-function extractArgs(input: string): ParserOut {
-  return [{ args: words(input) ?? '' }, '' ]
+function extractArgs (input: string): ParserOut {
+  log(input, 0)
+  return [{ args: words(input) ?? '' }, '']
 }
