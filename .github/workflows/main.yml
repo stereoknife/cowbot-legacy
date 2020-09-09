@@ -36,7 +36,8 @@ jobs:
       - name: Commit changes
         uses: EndBug/add-and-commit@v4
         with:
-          add: "./dist"
+          add: './dist'
+          force: true
           
       - name: Detect and Tag New Version
         uses: salsify/action-detect-and-tag-new-version@v2.0.1
