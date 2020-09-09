@@ -17,3 +17,6 @@ queries/
 trees/
 src/markov.ts
 deprecated/
+
+# Other
+.dome
