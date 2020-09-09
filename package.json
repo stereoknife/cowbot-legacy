@@ -1,16 +1,16 @@
 {
   "name": "cowbot",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "a silly discord bot",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snaekomu/cowbot.git"
+  },
   "scripts": {
     "prestart": "npm run build",
     "start": "node -r dotenv/config --enable-source-maps  ./dist/bot.js",
     "build": "tsc -p tsconfig.json",
-    "precompile": "npm run build",
-    "compile": "sudo docker build . --platform linux/arm/v7 -t snaekomu/cowbot:latest",
-    "predeploy": "npm run compile",
-    "deploy": "sudo docker push snaekomu/cowbot:latest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "kam",
