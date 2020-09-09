@@ -30,7 +30,7 @@ jobs:
       - name: Install deps
         run: |
           npm install
-          npm install typescript
+          npm install -g typescript
       
       - name: Build typescript
         run: tsc -p tsconfig.json
