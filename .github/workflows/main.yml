@@ -19,9 +19,15 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - name: Run a one-line script
-        uses: iCrawl/action-tsc@v1
+        
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1.4.3
+        
+      - name: Install deps
+        run: |
+          npm install
+          npm install typescript
+          tsc -p tsconfig.json
 
       - name: Detect and Tag New Version
         uses: salsify/action-detect-and-tag-new-version@v2.0.1
