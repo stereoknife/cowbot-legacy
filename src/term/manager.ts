@@ -1,7 +1,10 @@
-import { ParseData } from './parser'
+import type { Message } from 'eris'
+import type { ParseData } from './parser'
 import log from '../logging'
 
-type Command = (data: ParseData, guild: any, dm: any) => void
+export type CommandData = ParseData & { message: Message }
+
+type Command = (data: CommandData, reply: any, dm: any) => void
 
 type CommandOps = {
   alias: string[],
@@ -32,10 +35,12 @@ export function register (names: string[], cmd: Command) {
 }
 
 export function deregister (name: string) {
-
+  if (commandMap.has(name)) {
+    commandMap.delete(name)
+  }
 }
 
-export function exec (data: ParseData, publicReply: any, privateReply: any) {
+export function exec (data: CommandData, publicReply: any, privateReply: any) {
   log('executing ' + data.name)
   const id = findAlias(data.name) ?? data.name
   const comm = findCommand(id)

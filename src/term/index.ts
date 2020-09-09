@@ -16,8 +16,9 @@ function setup (srv: Client) {
     prefix: ['🤠', 'go-go-gadget', '☭', 'please cowbot would you']
   })
 
-  srv.on('messageCreate', async ({ channel, content, author }: Message) => {
-    const commandData = parse(content)
+  srv.on('messageCreate', async (message: Message) => {
+    const { channel, content, author } = message
+    const commandData = { ...parse(content), message }
     log(commandData, 0)
 
     // if valid command
