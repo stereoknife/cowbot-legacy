@@ -1,5 +1,6 @@
 # Config
 .vscode/
+.idea/
 .editorconfig
 .eslintrc.js
 .env
@@ -16,3 +17,7 @@ dist/
 queries/
 trees/
 src/markov.ts
+deprecated/
+
+# Other
+.dome
