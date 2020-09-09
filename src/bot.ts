@@ -4,6 +4,7 @@ import term from './term'
 import react from './reactions'
 import translate from './usr/translate.pkg'
 import general from './usr/general.pkg'
+import echo from './usr/echo.pkg'
 
 // Check env variables
 if (process.env.token == null) {
@@ -36,6 +37,7 @@ react.setup(bot)
 // load base features
 translate.install()
 general.install()
+echo.install()
 
 bot.on('ready', () => {
   console.log('Ready!')
