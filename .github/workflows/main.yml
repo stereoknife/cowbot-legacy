@@ -38,14 +38,3 @@ jobs:
           
       - name: Detect and Tag New Version
         uses: salsify/action-detect-and-tag-new-version@v2.0.1
-          
-  tag:
-    runs-on: ubuntu-latest
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
-
-      - name: Detect and Tag New Version
-        uses: salsify/action-detect-and-tag-new-version@v2.0.1
