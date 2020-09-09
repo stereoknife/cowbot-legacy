@@ -28,17 +28,15 @@ jobs:
         uses: actions/setup-node@v1.4.3
         
       - name: Install deps
-        run: |
-          npm install
-          npm install -g typescript
+        run: npm install
       
       - name: Build typescript
-        run: tsc -p tsconfig.json
+        run: npx tsc -p tsconfig.json
 
       - name: Commit changes
         uses: EndBug/add-and-commit@v4
         with:
-          add: "dist/**/*.*"
+          add: "./dist"
           
       - name: Detect and Tag New Version
         uses: salsify/action-detect-and-tag-new-version@v2.0.1
