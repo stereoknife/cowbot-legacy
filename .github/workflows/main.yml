@@ -4,9 +4,9 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [ devel ]
   pull_request:
-    branches: [ master ]
+    branches: [ devel ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,8 +19,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
         
       - name: Setup Node.js environment
         uses: actions/setup-node@v1.4.3
@@ -30,7 +28,4 @@ jobs:
           npm install
           npm install typescript
           tsc -p tsconfig.json
-
-      - name: Detect and Tag New Version
-        uses: salsify/action-detect-and-tag-new-version@v2.0.1
 
