@@ -15,8 +15,8 @@ package-lock.json
 # App
 queries/
 trees/
-src/markov.ts
 deprecated/
+dist/
 
 # Other
 .dome
