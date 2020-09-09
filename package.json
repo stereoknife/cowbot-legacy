@@ -1,6 +1,6 @@
 {
   "name": "cowbot",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "a silly discord bot",
   "main": "index.js",
   "scripts": {
@@ -19,24 +19,25 @@
     "axios": "^0.19.2",
     "eris": "^0.12.0",
     "google-translate-api-browser": "^1.1.71",
+    "lodash": "^4.17.20",
     "redis": "^3.0.2",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.161",
     "@types/axios": "^0.14.0",
-    "@types/node": "^13.13.4",
-    "@types/redis": "^2.8.21",
+    "@types/node": "^13.13.17",
+    "@types/redis": "^2.8.27",
     "@types/twitter": "^1.7.0",
-    "@typescript-eslint/eslint-plugin": "^3.0.0",
-    "@typescript-eslint/parser": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.10.1",
+    "@typescript-eslint/parser": "^3.10.1",
     "dotenv": "^8.2.0",
-    "eslint": "^7.1.0",
+    "eslint": "^7.8.1",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "standard": "^14.3.3",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.7"
   }
 }

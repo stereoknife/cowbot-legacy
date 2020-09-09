@@ -1,10 +1,9 @@
-import Eris from 'eris'
-import redis from 'redis'
-
-import { PosixClient } from './parser'
-import { loadReactions } from './events/reactions'
-import { loadCommands } from './commands/commands'
-import { loadUtilities } from './commands/utils'
+import { Client } from 'eris'
+import * as db from './db'
+import term from './term'
+import react from './reactions'
+import translate from './usr/translate.pkg'
+import general from './usr/general.pkg'
 
 // Check env variables
 if (process.env.token == null) {
@@ -15,39 +14,31 @@ if (process.env.owner == null) {
   console.warn("No owner defined, you won't be able to access to restricted commands.")
 }
 
-const db = redis.createClient(process.env.redisPath || '/var/redis/run/redis.sock', {
-  retry_strategy: opt => { if (opt.attempt > 10) process.exit() },
-  socket_initial_delay: 5000
-})
-db.on('error', err => console.error(err))
+db.init()
 
-const bot = new PosixClient(process.env.token, {
-  prefix: ['🤠', 'go-go-gadget', '☭']
-})
+const bot = new Client(process.env.token)
 
 process.on('uncaughtException', function (err) {
   console.log(err)
-  console.log('RIP me :(')
+  console.log('Katastrooffi occured')
+  bot.disconnect({ reconnect: true })
+})
+
+process.on('SIGINT', function () {
+  console.log('Shutting down...')
   bot.disconnect({ reconnect: false })
   process.exit()
 })
 
-process.on('SIGINT', function () {
-  console.log('Buh bai')
-  bot.disconnect({ reconnect: false })
-  process.exit()
-})
+term.setup(bot)
+react.setup(bot)
+
+// load base features
+translate.install()
+general.install()
 
 bot.on('ready', () => {
   console.log('Ready!')
 })
-
-// Reactions
-loadReactions(bot, db)
-// loadEvents(bot)
-
-// Commands
-loadCommands(bot, db)
-//loadUtilities(bot)
 
 bot.connect()
