@@ -1,4 +1,4 @@
-FROM node:13.8
+FROM node:14-alpine
 
 WORKDIR /srv
 
@@ -9,4 +9,4 @@ COPY package.json \
 
 RUN npm install
 
-CMD node ./dist/bot.js
+CMD node ./bot.js
