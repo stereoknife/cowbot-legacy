@@ -9,4 +9,4 @@ COPY package.json \
 
 RUN npm install
 
-CMD node ./bot.js
+CMD node --enable-source-maps ./bot.js
