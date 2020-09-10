@@ -1,4 +1,3 @@
-import { words } from 'lodash/fp'
 import log from '../logging'
 
 export type ParseData = {
@@ -88,4 +87,9 @@ function extractFlags (input: string): ParserOut {
 function extractArgs (input: string): ParserOut {
   log(input, 0)
   return [{ args: words(input) ?? '' }, '']
+}
+
+function words (input: string): string[] {
+  return [...input.matchAll(/([^\s]+)|"([^"]+)"/g)]
+    .map(match => match[1] ?? match[2])
 }
