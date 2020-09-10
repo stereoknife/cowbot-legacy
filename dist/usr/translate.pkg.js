@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -45,28 +36,25 @@ function translateFromCommand({ args, flags }, reply) {
     })
         .catch(logging_1.default);
 }
-function translateFromReaction({ name }, message, reply, dm) {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        const [text, from, to] = yield translate(message.content, 'auto', name === '🗺️' ? 'random' : 'en');
-        if (text === message.content) {
-            reply('Nothing to translate..');
-        }
-        else {
-            reply({
-                embed: {
-                    author: {
-                        name: (_b = (_a = message.member) === null || _a === void 0 ? void 0 : _a.nick) !== null && _b !== void 0 ? _b : message.author.username,
-                        icon_url: message.author.staticAvatarURL
-                    },
-                    description: `_${message.content}_\n${text}`,
-                    footer: {
-                        text: `Translated from ${from} to ${to}`
-                    }
+async function translateFromReaction({ name }, message, reply, dm) {
+    const [text, from, to] = await translate(message.content, 'auto', name === '🗺️' ? 'random' : 'en');
+    if (text === message.content) {
+        reply('Nothing to translate..');
+    }
+    else {
+        reply({
+            embed: {
+                author: {
+                    name: message.member?.nick ?? message.author.username,
+                    icon_url: message.author.staticAvatarURL
+                },
+                description: `_${message.content}_\n${text}`,
+                footer: {
+                    text: `Translated from ${from} to ${to}`
                 }
-            });
-        }
-    });
+            }
+        });
+    }
 }
 function translate(msg, from = 'auto', to = 'en') {
     if (to === 'random') {

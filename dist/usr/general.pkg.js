@@ -11,7 +11,9 @@ exports.default = {
     install() {
         term_1.default.register(['clap'], clap);
         term_1.default.register(['bless'], bless);
+        term_1.default.register(['al-bless'], quran);
         term_1.default.register(['youtube', 'yt'], youtube);
+        initQuran();
     }
 };
 function clap({ args }, reply) { reply(args.join('👏') + '👏'); }
@@ -26,6 +28,34 @@ function bless(_, reply) {
         reply(`**${bookname} ${chapter}:${verse}** ${text}`);
     })
         .catch(e => logging_1.default(e));
+}
+const quranIndex = [];
+async function initQuran() {
+    const res = await axios_1.default.get('http://api.quran.com:3000/api/v3/chapters');
+    if (res.status < 200 || res.status > 300)
+        return;
+    const { data } = res;
+    let startingVerse = 1;
+    data.chapters.forEach(({ verses_count }) => {
+        quranIndex.push([startingVerse, verses_count]);
+        startingVerse += verses_count;
+    });
+}
+async function quran(_, reply) {
+    try {
+        logging_1.default('calling quran api', 1);
+        const chapter = Math.floor(Math.random() * quranIndex.length);
+        const [start, run] = quranIndex[chapter];
+        const verse = start + Math.floor(Math.random() * run);
+        const res = await axios_1.default.get(`http://api.quran.com:3000/api/v3/chapters/${chapter + 1}/verses/${verse}/`);
+        if (res.status < 200 || res.status > 300)
+            return;
+        const { verse_key, text_simple } = res.data.verse;
+        reply(`**${verse_key}**  ${text_simple}`);
+    }
+    catch (e) {
+        logging_1.default(e);
+    }
 }
 const yturl = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&key=AIzaSyAMTINdBOQCIE0ArDVVED2Ia5f0zwpIi1w&q=';
 function youtube({ args }, reply) {

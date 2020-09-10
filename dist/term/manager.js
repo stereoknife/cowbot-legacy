@@ -31,9 +31,8 @@ function deregister(name) {
 }
 exports.deregister = deregister;
 function exec(data, publicReply, privateReply) {
-    var _a;
     logging_1.default('executing ' + data.name);
-    const id = (_a = findAlias(data.name)) !== null && _a !== void 0 ? _a : data.name;
+    const id = findAlias(data.name) ?? data.name;
     const comm = findCommand(id);
     if (comm != null) {
         comm(data, publicReply, privateReply);
@@ -41,7 +40,7 @@ function exec(data, publicReply, privateReply) {
 }
 exports.exec = exec;
 function loadCommand(id, db) {
-    const op = Object.assign({}, emptyOpts);
+    const op = { ...emptyOpts };
     op.alias = db[`${id}:alias`];
     op.denyUsers = db[`${id}:denyusers`];
     op.allowUsers = db[`${id}:allowusers`];
