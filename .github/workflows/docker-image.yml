@@ -8,14 +8,19 @@ on:
 
 jobs:
 
-  build:
+  build-image:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+        
+    - name: Detect and Tag New Version
+      uses: salsify/action-detect-and-tag-new-version@v2.0.1
       
-    - name: Download a single artifact
+    - name: Download build artifact
       uses: actions/download-artifact@v2
       with:
         name: cowbot-build
