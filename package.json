@@ -1,6 +1,6 @@
 {
   "name": "cowbot",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "a silly discord bot",
   "main": "index.js",
   "repository": {
