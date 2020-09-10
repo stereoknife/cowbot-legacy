@@ -1,12 +1,12 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Build
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
   push:
-    branches: [ master, devel ]
+    branches: [ devel ]
   pull_request:
     branches: [ master, devel ]
 
@@ -33,12 +33,12 @@ jobs:
       - name: Build typescript
         run: npx tsc -p tsconfig.json
 
-      - name: Commit changes
-        uses: EndBug/add-and-commit@v4
-        with:
-          add: './dist'
-          force: true
+#     - name: Commit changes
+#       uses: EndBug/add-and-commit@v4
+#       with:
+#         add: './dist'
+#         force: true
           
-      - name: Detect and Tag New Version
-        uses: salsify/action-detect-and-tag-new-version@v2.0.1
-        if: github.ref == 'master'
+#     - name: Detect and Tag New Version
+#       uses: salsify/action-detect-and-tag-new-version@v2.0.1
+#       if: github.ref == 'master'
