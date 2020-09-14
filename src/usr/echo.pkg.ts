@@ -3,8 +3,12 @@ import type { CommandData } from '../term/manager'
 /* eslint-enable no-unused-vars */
 
 import command from '../term'
+import { rest } from 'lodash'
+import { RedisClient } from 'redis'
 // import log from '../logging'
-// import db from '../db'
+// mport db from '../db'
+
+const db: any = {}
 
 export default {
   install () {
@@ -18,7 +22,10 @@ export default {
 
 function remember ({ args, message }: CommandData, reply: any) {
   const name = args.shift()
-  if (name == null) return
+  const str = args.join(' ')
+  if (name == null || str == null) return
+
+  db.set(name, str, 'nx')
   command.register([name], (_, rp) => rp(args.join(' ')))
   reply('ok')
 }
@@ -26,6 +33,7 @@ function remember ({ args, message }: CommandData, reply: any) {
 function forget ({ args, message }: CommandData, reply: any) {
   const name = args.shift()
   if (name == null) return
+  db.del(name)
   command.deregister(name)
   reply('i forgot')
 }

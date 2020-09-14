@@ -12,8 +12,8 @@ import log from '../logging'
 export default {
   install () {
     command.register(['t', 'translate'], translateFromCommand)
-    reaction.register('🔣', translateFromReaction)
-    reaction.register('🗺️', translateFromReaction)
+    reaction.registerAdd('🔣', translateFromReaction)
+    reaction.registerAdd('🗺️', translateFromReaction)
   },
 
   uninstall () {
