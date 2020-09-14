@@ -13,7 +13,7 @@ export default {
 
 function setup (srv: Client) {
   const parse = parser({
-    prefix: ['🤠', 'go-go-gadget', '☭', 'please cowbot would you']
+    prefix: ['🤠', 'go-go-gadget', '☭', 'cowbot would you please']
   })
 
   srv.on('messageCreate', async (message: Message) => {

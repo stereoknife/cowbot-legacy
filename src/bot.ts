@@ -5,6 +5,7 @@ import react from './reactions'
 import translate from './usr/translate.pkg'
 import general from './usr/general.pkg'
 import echo from './usr/echo.pkg'
+import callout from './usr/callout.pkg'
 
 // Check env variables
 if (process.env.token == null) {
@@ -31,15 +32,16 @@ process.on('SIGINT', function () {
   process.exit()
 })
 
-term.setup(bot)
-react.setup(bot)
+bot.on('ready', async () => {
+  term.setup(bot)
+  react.setup(bot)
 
-// load base features
-translate.install()
-general.install()
-echo.install()
+  // load base features
+  general.install()
+  translate.install()
+  echo.install()
+  callout.install()
 
-bot.on('ready', () => {
   console.log('Ready!')
 })
 
