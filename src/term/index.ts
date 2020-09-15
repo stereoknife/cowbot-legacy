@@ -4,6 +4,7 @@ import { Client, Message } from 'eris'
 import { exec, register, deregister } from './manager'
 import { parser } from './parser'
 import log from '../logging'
+import { Severity } from '@sentry/node'
 
 export default {
   register,
@@ -19,11 +20,10 @@ function setup (srv: Client) {
   srv.on('messageCreate', async (message: Message) => {
     const { channel, content, author } = message
     const commandData = { ...parse(content), message }
-    log(commandData, 0)
 
     // if valid command
     if (commandData?.prefix != null && commandData?.prefix !== '') {
-      log('valid command found', 1)
+      log(Severity.Debug, 'Valid command found')
 
       const reply = channel.createMessage.bind(channel)
       const dmch = await author.getDMChannel()
