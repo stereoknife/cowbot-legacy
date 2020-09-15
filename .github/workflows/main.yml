@@ -52,6 +52,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: cowbot-build
+        path: dist/
       
     - name: Prepare
       id: prep
