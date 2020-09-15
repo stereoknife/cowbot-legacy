@@ -1,4 +1,5 @@
 import log from '../logging'
+import { Severity } from '@sentry/node'
 
 export type ParseData = {
   prefix: string
@@ -43,6 +44,7 @@ function makeChain (data: NullableParseData | null, input: string): ParserChain 
       if (data.name == null) data.prefix = ''
       if (data.flags == null) data.flags = {}
       if (data.args == null) data.args = []
+      log(Severity.Log, 'Parsed data: ' + data)
       return data as ParseData
     },
     chain: (p) => {
@@ -55,7 +57,7 @@ function makeChain (data: NullableParseData | null, input: string): ParserChain 
 function extractPrefix (pref: string[]): (input: string) => ParserOut {
   return (input: string) => {
     const prefix = input.match(new RegExp(`^(${pref.join('|')})`))?.[1]
-    log(prefix, 0)
+    log(Severity.Log, 'Prefix: ' + prefix)
     return [{ prefix }, input.slice(prefix?.length ?? 0)]
   }
 }
@@ -63,7 +65,7 @@ function extractPrefix (pref: string[]): (input: string) => ParserOut {
 function extractCommand (input: string): ParserOut {
   const w = words(input)
   const name = w.shift()
-  log(name, 0)
+  log(Severity.Log, 'Command name: ' + name)
   return [{ name }, w.join(' ')]
 }
 
@@ -80,12 +82,12 @@ function extractFlags (input: string): ParserOut {
       out.push(w)
     }
   }
-  log(flags, 0)
+  log(Severity.Log, 'Flags: ' + flags)
   return [{ flags }, out.join(' ')]
 }
 
 function extractArgs (input: string): ParserOut {
-  log(input, 0)
+  log(Severity.Log, 'Args: ' + input ?? '')
   return [{ args: words(input) ?? '' }, '']
 }
 

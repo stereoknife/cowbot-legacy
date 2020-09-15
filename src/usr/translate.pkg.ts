@@ -3,6 +3,7 @@ import type { ParseData } from '../term/parser'
 import { Message, Emoji } from 'eris'
 /* eslint-enable no-unused-vars */
 
+import { Severity } from '@sentry/node'
 import command from '../term'
 import reaction from '../reactions'
 import tr from 'google-translate-api-browser'
@@ -35,7 +36,9 @@ function translateFromCommand ({ args, flags }: ParseData, reply: any) {
         }
       })
     })
-    .catch(log)
+    .catch(e => {
+      log(Severity.Error, 'Translate from command :: ' + e)
+    })
 }
 
 async function translateFromReaction ({ name }: Emoji, message: Message, reply: any, dm: any) {
@@ -65,6 +68,8 @@ export function translate (msg: string, from: string = 'auto', to: string = 'en'
     const i = Math.floor(Math.random() * langKeys.length)
     to = langKeys[i]
   }
+
+  log(Severity.Log, `Translating from ${from} to ${to}`)
 
   return tr(msg, { from, to })
     .then((tr: any) => [tr.text, langs[tr.from.language.iso], langs[to]])

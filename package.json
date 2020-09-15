@@ -1,6 +1,6 @@
 {
   "name": "cowbot",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "a silly discord bot",
   "main": "index.js",
   "repository": {
@@ -16,6 +16,7 @@
   "author": "kam",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "@sentry/node": "^5.23.0",
     "axios": "^0.19.2",
     "eris": "^0.12.0",
     "google-translate-api-browser": "^1.1.71",
@@ -23,8 +24,9 @@
     "twitter": "^1.7.1"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.161",
+    "@sentry/types": "^5.23.0",
     "@types/axios": "^0.14.0",
+    "@types/lodash": "^4.14.161",
     "@types/node": "^13.13.17",
     "@types/redis": "^2.8.27",
     "@types/twitter": "^1.7.0",

@@ -1,10 +1,16 @@
-const logging = true
+import * as Sentry from '@sentry/node'
 
-const level = 1;
+export const S = Sentry.Severity
 
-export default function log(message: any, priority: number = 1) {
-  if (logging && priority >= level) {
-    console.log(message)
-    return
-  }
+Sentry.init()
+
+export default function message (severity: Sentry.Severity, message: any) {
+  Sentry.withScope((scope) => {
+    scope.setLevel(severity)
+    if (severity === S.Info || severity === S.Debug || severity === S.Log) {
+      Sentry.captureMessage(message)
+    } else {
+      Sentry.captureException(message)
+    }
+  })
 }
