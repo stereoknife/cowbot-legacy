@@ -3,8 +3,6 @@ import { Client, Message } from 'eris'
 /* eslint-enable no-unused-vars */
 import { exec, register, deregister } from './manager'
 import { parser } from './parser'
-import log from '../logging'
-import { Severity } from '@sentry/node'
 
 export default {
   register,
@@ -23,7 +21,6 @@ function setup (srv: Client) {
 
     // if valid command
     if (commandData?.prefix != null && commandData?.prefix !== '') {
-      log(Severity.Debug, 'Valid command found')
 
       const reply = channel.createMessage.bind(channel)
       const dmch = await author.getDMChannel()

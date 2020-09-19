@@ -29,7 +29,6 @@ const commandMap = new Map()
 export function register (names: string[], cmd: Command) {
   if (names.length === 0) return
   const id = names.shift()
-  log(Severity.Info, `Registering command \`${id}\``)
   names.forEach(alias => {
     aliasMap.set(alias, id)
   })
@@ -43,13 +42,12 @@ export function deregister (name: string) {
 }
 
 export function exec (data: CommandData, publicReply: any, privateReply: any) {
-  log(Severity.Log, `Called exec command function for \`${data.name}\``)
   const id = findAlias(data.name) ?? data.name
   const comm = findCommand(id)
   if (comm != null) {
     comm(data, publicReply, privateReply)
   } else {
-    log(Severity.Warning, `No command exists with alias \`${data.name}\``)
+    // Handle alternative if needed
   }
 }
 

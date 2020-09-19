@@ -24,40 +24,27 @@ const bot = new Client(process.env.token)
 
 process.on('uncaughtException', function (err) {
   log(Severity.Fatal, 'Katastrooffi: ' + err)
-  bot.disconnect({ reconnect: true })
+  bot.disconnect({ reconnect: false })
 })
 
 process.on('warning', function (err) {
-  log(Severity.Warning, 'Katastrooffi: ' + err)
-  bot.disconnect({ reconnect: true })
+  log(Severity.Warning, 'Warning: ' + err)
 })
 
 process.on('SIGINT', function () {
   log(Severity.Info, 'Shutting down bot...')
-  console.log('Shutting down...')
   bot.disconnect({ reconnect: false })
   process.exit()
 })
 
-bot.on('ready', async () => {
-  log(Severity.Info, 'Setting up command client...')
-  term.setup(bot)
-  log(Severity.Info, 'Done!')
-  log(Severity.Info, 'Setting up reaction client...')
+bot.on('ready', async () => {  term.setup(bot)
   react.setup(bot)
-  log(Severity.Info, 'Done!')
-
   // load base features
-  log(Severity.Info, 'Loading commands...')
   general.install()
-  log(Severity.Info, 'General loaded')
   translate.install()
-  log(Severity.Info, 'Translate loaded')
   echo.install()
-  log(Severity.Info, 'Echo loaded')
   // callout.install()
-  log(Severity.Info, 'Loading complete!')
-
+  log(Severity.Info, 'Bot launched and ready.')
   console.log('Ready!')
 })
 

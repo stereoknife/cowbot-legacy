@@ -1,11 +1,8 @@
 /* eslint-disable no-unused-vars */
 import type { CommandData } from '../term/manager'
 /* eslint-enable no-unused-vars */
-
-import { Severity } from '@sentry/node'
 import command from '../term'
-import log from '../logging'
-// mport db from '../db'
+// import db from '../db'
 
 const db: any = {}
 
@@ -23,8 +20,6 @@ function remember ({ args, message }: CommandData, reply: any) {
   const name = args.shift()
   const str = args.join(' ')
   if (name == null || str == null) return
-
-  log(Severity.Log, `Remembering message "${str}" at entry "${name}"`)
   db.set(name, str, 'nx')
   command.register([name], (_, rp) => rp(args.join(' ')))
   reply('ok')
@@ -33,7 +28,6 @@ function remember ({ args, message }: CommandData, reply: any) {
 function forget ({ args, message }: CommandData, reply: any) {
   const name = args.shift()
   if (name == null) return
-  log(Severity.Log, `Forgetting message at entry "${name}"`)
   db.del(name)
   command.deregister(name)
   reply('i forgot')

@@ -4,7 +4,7 @@ import type { ParseData } from '../term/parser'
 import command from '../term'
 import axios from 'axios'
 import log from '../logging'
-import { Severity } from '@sentry/node'
+import * as Sentry from '@sentry/node'
 
 export default {
   install () {
@@ -19,15 +19,13 @@ export default {
 function clap ({ args }: ParseData, reply: any) { reply(args.join('👏') + '👏') }
 
 function bless (_: ParseData, reply: any) {
-  log(Severity.Log, 'Calling bless api')
   axios.get('http://labs.bible.org/api/?passage=random&type=json')
     .then((res) => {
-      log(Severity.Log, 'Response from bless api')
       if (res.status < 200 || res.status > 300) return
       const { bookname, chapter, verse, text } = res.data[0]
       reply(`**${bookname} ${chapter}:${verse}** ${text}`)
     })
-    .catch(e => log(Severity.Error, e))
+    .catch(Sentry.captureException)
 }
 
 const quranIndex: [number, number][] = []
@@ -44,7 +42,6 @@ async function initQuran () {
 
 async function quran (_: ParseData, reply: any) {
   try {
-    log(Severity.Log, 'Calling quran api')
     const chapter = Math.floor(Math.random() * quranIndex.length)
     const [start, run] = quranIndex[chapter]
     const verse = start + Math.floor(Math.random() * run)
@@ -53,7 +50,7 @@ async function quran (_: ParseData, reply: any) {
     const { verse_key, text_simple } = res.data.verse
     reply(`**${verse_key}**  ${text_simple}`)
   } catch (e) {
-    log(Severity.Error, e)
+    Sentry.captureException(e)
   }
 }
 
@@ -65,5 +62,5 @@ function youtube ({ args }: ParseData, reply: any) {
       const id = res.data.items[0].id.videoId
       if (id != null) reply(`https://youtube.com/watch?v=${id}`)
     })
-    .catch(e => log(Severity.Error, e))
+    .catch(Sentry.captureException)
 }

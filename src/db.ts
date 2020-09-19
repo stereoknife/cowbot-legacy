@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import redis from 'redis'
 
 let db: redis.RedisClient
@@ -7,7 +8,7 @@ export function init () {
     retry_strategy: opt => { if (opt.attempt > 10) process.exit() },
     socket_initial_delay: 5000
   })
-    .on('error', err => console.error(err))
+    .on('error', Sentry.captureException)
 }
 
 export default {
