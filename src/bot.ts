@@ -37,13 +37,14 @@ process.on('SIGINT', function () {
   process.exit()
 })
 
+react.setup(bot)
+// load base features
+general.install()
+translate.install()
+echo.install()
+// callout.install()
+
 bot.on('ready', async () => {  term.setup(bot)
-  react.setup(bot)
-  // load base features
-  general.install()
-  translate.install()
-  echo.install()
-  // callout.install()
   log(Severity.Info, 'Bot launched and ready.')
   console.log('Ready!')
 })
