@@ -22,6 +22,7 @@ export function setup (bot: Client) {
       reply: replyfn | undefined,
       dm: replyfn | undefined
     try {
+	  if (user === bot.user.id) return
       if (!addReaction.has(emoji.name)) return
   
       message = ((uncachedMsg as Message).content == null)
@@ -49,6 +50,7 @@ export function setup (bot: Client) {
 
   bot.on('messageReactionRemove', async (uncachedMsg, emoji, user) => {
     if (!remReaction.has(emoji.name)) return
+    if (user === bot.user.id) return
 
     const message = ((uncachedMsg as Message).content == null)
       ? await bot.getMessage(uncachedMsg.channel.id, uncachedMsg.id)
