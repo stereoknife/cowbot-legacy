@@ -20,7 +20,7 @@
     "axios": "^0.21.1",
     "eris": "^0.12.0",
     "google-translate-api-browser": "^1.1.71",
-    "redis": "^3.0.2",
+    "redis": "^3.1.1",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
